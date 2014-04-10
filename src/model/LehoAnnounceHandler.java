@@ -7,13 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,14 +44,11 @@ public class LehoAnnounceHandler {
         subjects = new HashMap<>();
         announcements = new HashMap<>();
         path = "http://leho.howest.be/main/announcements/announcements.php?cidReq=";
-        try {            
-            announceFrame.getRootPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            readFromConfig("http://leho.howest.be//user_courses.php");
-            sleep(1500);
-            getSubjects("http://leho.howest.be//user_courses.php");
-        } finally {
-            announceFrame.getRootPane().setCursor(Cursor.getDefaultCursor());
-        }
+        announceFrame.getRootPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        readFromConfig("http://leho.howest.be//user_courses.php");
+        getSubjects("http://leho.howest.be//user_courses.php");
+        announceFrame.getRootPane().setCursor(Cursor.getDefaultCursor());
+        
     }
     
     private void getSubjects(String path) throws IOException, InterruptedException{
@@ -91,9 +86,7 @@ public class LehoAnnounceHandler {
     }
     
     public Document setConnection(String path) throws IOException{
-        Connection con = Jsoup.connect(path);
-        con.cookies(config.getCookies());
-        return con.get();
+        return Jsoup.connect(path).timeout(10*1000).cookies(config.getCookies()).get();
     }
     
     private void writeToConfig(String path) throws IOException{
@@ -141,7 +134,6 @@ public class LehoAnnounceHandler {
                 ids.put(links.get(i).toString().substring(from, to), links.get(i).text());
             }
         }
-        
         return ids;
     }
 }
